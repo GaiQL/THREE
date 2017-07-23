@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="three.js"></script>
+        
+        <script type="text/javascript">
+            function init() {
+            	var z = document.getElementById('mainCanvas');
+	        	z.style.top = innerHeight/2 - 150+'px';
+	        	z.style.left = innerWidth/2 - 200+'px';
+            	//渲染器和Canvas元素绑定
+                var renderer = new THREE.WebGLRenderer({
+                    canvas: document.getElementById('mainCanvas')
+                });
+                renderer.setClearColor(0x000000);
+
+                var scene = new THREE.Scene();//创建场景
+                
+                //摄像头
+                //分为两种：正交投影照相机(Orthographic Camera)与透视投影照相机(Perspective Camera)
+                var camera = new THREE.OrthographicCamera(-10, 10, 7.5, -7.5, 0.1, 100);
+                camera.position.set(25, 25, 25);
+                //我们可以通过lookAt函数指定它看着原点方向
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+                scene.add(camera);
+                
+                //灯光
+                var light = new THREE.PointLight(0xffffff, 1, 1000);
+                light.position.set(10, 15, 20);
+                scene.add(light);
+                //将图片导入纹理中，在完成导入纹理的步骤后，重新绘制画面，这是在回调函数中实现的
+                var texture = THREE.ImageUtils.loadTexture('2.jpg', {}, function() {
+                    renderer.render(scene, camera);
+                });
+                //将材质的map属性设置为texture
+                var material = new THREE.MeshLambertMaterial({
+                    map: texture
+                });
+                //正方体
+//              var cube = new THREE.Mesh(new THREE.CubeGeometry(5, 5, 5), material);
+//              scene.add(cube);
+				//球体
+                var sphere = new THREE.Mesh(new THREE.SphereGeometry(6, 25, 25), material);
+                scene.add(sphere);
+                
+                renderer.render(scene, camera);
+                var animate = function () {
+					requestAnimationFrame( animate );
+	
+	
+					sphere.rotation.y += 0.01;
+					sphere.rotation.x += 0.01;
+					
+	
+					renderer.render(scene, camera);
+				};
+				animate();
+            }
+            /*
+			             正交投影照相机（Orthographic Camera）设置起来较为直观，它的构造函数是：
+			
+				THREE.OrthographicCamera(left, right, top, bottom, near, far)
+				透视投影照相机（Perspective Camera）的构造函数是：
+	
+				THREE.PerspectiveCamera(fov, aspect, near, far)
+             */
+        </script>
+    </head>
+    <style>
+    	body{
+    		margin:0;
+
+    	}
+    	canvas{
+    		width:400px;
+    		height:300px;
+    		position:absolute;
+    	}
+    </style>
+    
+    <body onload="init()">
+        <canvas id="mainCanvas"></canvas>
+    </body>
+</html>

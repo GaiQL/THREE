@@ -19,20 +19,45 @@
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			//如果您希望保持应用程序的大小，但是以较低的分辨率呈现，那么可以通过调用setSize（false）作为updateStyle（第三个参数）来实现。例如，setSize（window.innerWidth / 2，window.innerHeight / 2，false）将以半分辨率渲染您的应用程序
 			document.body.appendChild( renderer.domElement );
-
-			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			
+			var geometry = new THREE.SphereBufferGeometry( 5, 32, 32 );
 			//要创建多维数据集，我们需要一个BoxGeometry。这是一个包含多维数据集的所有点（顶点）和填充（面）的对象
-			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+//			BoxGeometry:
+//			BoxGeometry是四边形原始几何类。它通常用于创建“width”，“height”和“depth”构造函数参数提供的维度的立方体或不规则四边形。
+//			SphereBufferGeometry:
+//			SphereBufferGeometry（半径，widthSegments，heightSegments，phiStart，phiLength，thetaStart，thetaLength）
+//			
+//			半径 - 球半径。默认值为50. 
+//			widthSegments - 水平段数。最小值为3，默认值为8. 
+//			heightSegments - 垂直段数。最小值为2，默认值为6. 
+//			phiStart - 指定水平起始角度。默认值为0. 
+//			phiLength - 指定水平扫掠角度大小。默认值为Math.PI * 
+//			2.θStart - 指定垂直起始角度。默认值为0. 
+//			thetaLength - 指定垂直扫掠角度大小。默认是Math.PI.
+//			通过扫描和计算Y轴（水平扫描）和Z轴（垂直扫描）周围的顶点来创建几何。因此，可以通过使用不同的phiStart，phiLength，θStart和thetaLength值来创建不完整的球体（类似于“球形切片”），以便定义我们开始（或结束）计算这些顶点的点。
+//			var material = new THREE.MeshBasicMaterial( { color: 0x334451 } );
+			var material = new THREE.LineBasicMaterial( {
+				color: 0xffffff,
+				linewidth: 1,
+				linecap: 'round', //ignored by WebGLRenderer
+				linejoin:  'round' //ignored by WebGLRenderer
+			} );
 			//除了几何，我们需要一种材料来对其进行着色。Three.js有几种材料，但现在我们将坚持使用MeshBasicMaterial。所有材料都具有将要应用于其的属性对象。为了保持简单，我们只提供一个颜色属性0x00ff00，它是绿色的。它的工作原理与CSS或Photoshop（十六进制颜色）中的颜色相同。
 			var cube = new THREE.Mesh( geometry, material );
 			//我们需要的第三件事就是网格。网格是一个对象，它接受一个几何体，然后应用一个材质，然后我们可以插入到我们的场景中，并且可以自由移动。
 			scene.add( cube );
-			camera.position.z = 5;
+			var light = new THREE.PointLight( 0xff0000, 1, 100 );
+			light.position.set( 50, 50, 50 );
+
+			scene.add( light );
+
+			
+			camera.position.z = 50;
 			//默认情况下，当我们调用scene.add（）时，我们添加的东西将被添加到坐标（0,0,0）中。这将导致相机和多维数据集彼此在一起。为了避免这种情况，我们只需将相机移出一点。
 			var animate = function () {
 				requestAnimationFrame( animate );
 
-				cube.rotation.x += 0.01;
+
 				cube.rotation.y += 0.01;
 
 				renderer.render(scene, camera);
